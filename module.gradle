@@ -2,7 +2,9 @@ ext {
     /*
        This name will be used in the name of the so file ("lib${moduleLibraryName}.so").
     */
-    moduleLibraryName = "template"
+
+    //from little busters heroine
+    moduleLibraryName = "ring"
 
     /* Minimal supported Riru API version, used in the version check of riru.sh */
     moduleMinRiruApiVersion = 24
@@ -20,11 +22,13 @@ ext {
        Note, the older version of the template uses '-' instead of '_', if your are upgrading from
        the older version, please pay attention.
     */
-    magiskModuleId = "riru_template"
 
-    moduleName = "Template"
-    moduleAuthor = "Template"
-    moduleDescription = "Riru module template. Requires Riru $moduleMinRiruVersionName or above."
-    moduleVersion = "v26.0.0"
-    moduleVersionCode = 26
+    // 取自我家猫的毛色
+    magiskModuleId = "Ori_Ring_Ge"
+
+    moduleName = "Ring_Hook"
+    moduleAuthor = "Gstalker"
+    moduleDescription = "Ring Hook. Requires Riru $moduleMinRiruVersionName or above."
+    moduleVersion = "v0.0.0"
+    moduleVersionCode = 1
 }
