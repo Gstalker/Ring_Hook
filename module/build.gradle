@@ -50,11 +50,10 @@ afterEvaluate {
         def zipName = "${magiskModuleId.replace('_', '-')}-${moduleVersion}-${variantLowered}.zip"
         def magiskDir = file("$outDir/magisk_module_$variantLowered")
 
-        def dexPath = "$rootDir/module/build/intermediates/aar_main_jar/${variantLowered}"
+        def dexPath = "$buildDir/intermediates/aar_main_jar/${variantLowered}"
         def dexFile = "${dexPath}/inject.dex"
 
         task("prepareMagiskFiles${variantCapped}", type: Sync) {
-            dependsOn("assemble$variantCapped")
             dependsOn("buildDexFile$variantCapped")
 
             def templatePath = "$rootDir/template/magisk_module"
@@ -108,6 +107,7 @@ afterEvaluate {
         }
 
         task("buildDexFile${variantCapped}", type: Exec) {
+            dependsOn("assemble$variantCapped")
             def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
             def commands = ["java -jar",
                             "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}/lib/dx.jar",
