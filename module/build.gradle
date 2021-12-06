@@ -50,8 +50,12 @@ afterEvaluate {
         def zipName = "${magiskModuleId.replace('_', '-')}-${moduleVersion}-${variantLowered}.zip"
         def magiskDir = file("$outDir/magisk_module_$variantLowered")
 
+        def dexPath = "$rootDir/module/build/intermediates/aar_main_jar/${variantLowered}"
+        def dexFile = "${dexPath}/inject.dex"
+
         task("prepareMagiskFiles${variantCapped}", type: Sync) {
             dependsOn("assemble$variantCapped")
+            dependsOn("buildDexFile$variantCapped")
 
             def templatePath = "$rootDir/template/magisk_module"
 
@@ -86,6 +90,9 @@ afterEvaluate {
             from("$buildDir/intermediates/stripped_native_libs/$variantLowered/out/lib") {
                 into 'lib'
             }
+            from("${dexFile}"){
+                into ''
+            }
             doLast {
                 fileTree("$magiskDir").visit { f ->
                     if (f.directory) return
@@ -97,6 +104,22 @@ afterEvaluate {
                     }
                     file(f.file.path + ".sha256sum").text = md.digest().encodeHex()
                 }
+            }
+        }
+
+        task("buildDexFile${variantCapped}", type: Exec) {
+            def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
+            def commands = ["java -jar",
+                            "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}/lib/dx.jar",
+                            "--dex",
+                            "--no-strict",
+                            "--output",
+                            "${dexFile}",
+                            "${dexPath}/classes.jar"]
+            if (isWindows) {
+                commandLine 'cmd', '/c', commands.join(" ")
+            } else {
+                commandLine commands
             }
         }
 

@@ -47,6 +47,12 @@ mkdir "$MODPATH/riru"
 mkdir "$MODPATH/riru/lib"
 mkdir "$MODPATH/riru/lib64"
 
+DEXPATH="$MODPATH/riru/dexfile"
+mkdir "$DEXPATH"
+
+ui_print "- Extractin dex files"
+extract "$ZIPFILE" "inject.dex" "$DEXPATH" true
+
 if [ "$ARCH" = "arm" ] || [ "$ARCH" = "arm64" ]; then
   ui_print "- Extracting arm libraries"
   extract "$ZIPFILE" "lib/armeabi-v7a/lib$RIRU_MODULE_LIB_NAME.so" "$MODPATH/riru/lib" true
