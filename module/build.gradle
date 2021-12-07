@@ -4,7 +4,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 import java.security.MessageDigest
 
 plugins {
-    id 'com.android.library'
+    id 'com.android.application'
 }
 
 apply from: file(rootProject.file('module.gradle'))
@@ -14,6 +14,8 @@ android {
     defaultConfig {
         minSdk min_sdk
         targetSdk target_sdk
+        multiDexEnabled = false
+
         externalNativeBuild {
             cmake {
                 arguments "-DMODULE_NAME:STRING=$moduleLibraryName",
@@ -43,18 +45,18 @@ dependencies {
 }
 
 afterEvaluate {
-    android.libraryVariants.forEach { variant ->
+    android.applicationVariants.forEach { variant ->
         def variantCapped = variant.name.capitalize()
         def variantLowered = variant.name.toLowerCase()
 
         def zipName = "${magiskModuleId.replace('_', '-')}-${moduleVersion}-${variantLowered}.zip"
         def magiskDir = file("$outDir/magisk_module_$variantLowered")
 
-        def dexPath = "$buildDir/intermediates/aar_main_jar/${variantLowered}"
-        def dexFile = "${dexPath}/inject.dex"
+        def dexPath = "$buildDir/intermediates/dex/$variantLowered/mergeDex$variantCapped"
+        def dexFile = "${dexPath}/classes.dex"
 
         task("prepareMagiskFiles${variantCapped}", type: Sync) {
-            dependsOn("buildDexFile$variantCapped")
+            dependsOn("assemble$variantCapped")
 
             def templatePath = "$rootDir/template/magisk_module"
 
@@ -91,6 +93,7 @@ afterEvaluate {
             }
             from("${dexFile}"){
                 into ''
+                rename "classes.dex","ring.dex"
             }
             doLast {
                 fileTree("$magiskDir").visit { f ->
@@ -103,23 +106,6 @@ afterEvaluate {
                     }
                     file(f.file.path + ".sha256sum").text = md.digest().encodeHex()
                 }
-            }
-        }
-
-        task("buildDexFile${variantCapped}", type: Exec) {
-            dependsOn("assemble$variantCapped")
-            def isWindows = org.gradle.internal.os.OperatingSystem.current().isWindows()
-            def commands = ["java -jar",
-                            "${android.sdkDirectory}/build-tools/${android.buildToolsVersion}/lib/dx.jar",
-                            "--dex",
-                            "--no-strict",
-                            "--output",
-                            "${dexFile}",
-                            "${dexPath}/classes.jar"]
-            if (isWindows) {
-                commandLine 'cmd', '/c', commands.join(" ")
-            } else {
-                commandLine commands
             }
         }
 
