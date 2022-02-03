@@ -35,8 +35,10 @@ find_package(riru REQUIRED CONFIG)
 
 include_directories(include)
 
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/ring)
+
 add_library(${MODULE_NAME} SHARED main.cpp ${CMAKE_CURRENT_BINARY_DIR}/config.cpp)
-target_link_libraries(${MODULE_NAME} log riru::riru)
+target_link_libraries(${MODULE_NAME} log riru::riru ringInner)
 
 if (NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
     add_custom_command(TARGET ${MODULE_NAME} POST_BUILD
