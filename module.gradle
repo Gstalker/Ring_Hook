@@ -1,34 +1,15 @@
 ext {
     /*
-       This name will be used in the name of the so file ("lib${moduleLibraryName}.so").
-    */
-
-    //from little busters heroine
-    moduleLibraryName = "ring"
-
-    /* Minimal supported Riru API version, used in the version check of riru.sh */
-    moduleMinRiruApiVersion = 24
-
-    /* The version name of minimal supported Riru, used in the version check of riru.sh */
-    moduleMinRiruVersionName = "v24.0.0"
-
-    /* Maximum supported Riru API version, used in the version check of riru.sh */
-    moduleRiruApiVersion = 26
-
-    /*
        Magisk module ID
        Since Magisk use it to distinguish different modules, you should never change it.
-
        Note, the older version of the template uses '-' instead of '_', if your are upgrading from
        the older version, please pay attention.
     */
+    magiskModuleId = "zygisk_template"
 
-    // 取自我家猫的毛色
-    magiskModuleId = "Ori_Ring_Ge"
-
-    moduleName = "Ring_Hook"
-    moduleAuthor = "Gstalker"
-    moduleDescription = "Ring Hook. Requires Riru $moduleMinRiruVersionName or above."
-    moduleVersion = "v0.0.0"
-    moduleVersionCode = 1
+    moduleName = "Template"
+    moduleAuthor = "Template"
+    moduleDescription = "Zygisk module template."
+    moduleVersion = "v0.0.2"
+    moduleVersionCode = 2
 }

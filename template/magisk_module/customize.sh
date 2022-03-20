@@ -1,4 +1,19 @@
-SKIPUNZIP=1
+# Extract verify.sh
+
+enforce_install_from_magisk_app() {
+  if $BOOTMODE; then
+    ui_print "- Installing from Magisk app"
+  else
+    ui_print "*********************************************************"
+    ui_print "! Install from recovery is NOT supported"
+    ui_print "! Please install from Magisk app"
+    abort "*********************************************************"
+  fi
+}
+
+VERSION=$(grep_prop version "${TMPDIR}/module.prop")
+ui_print "- Zygisk-template version ${VERSION}"
+
 
 # Extract verify.sh
 ui_print "- Extracting verify.sh"
@@ -11,20 +26,12 @@ if [ ! -f "$TMPDIR/verify.sh" ]; then
 fi
 . $TMPDIR/verify.sh
 
-# Extract riru.sh
+extract "$ZIPFILE" 'customize.sh' "$TMPDIR"
+extract "$ZIPFILE" 'verify.sh' "$TMPDIR"
+extract "$ZIPFILE" 'util_functions.sh' "$TMPDIR"
+. "$TMPDIR/util_functions.sh"
 
-# Variables provided by riru.sh:
-#
-# RIRU_API: API version of installed Riru, 0 if not installed
-# RIRU_MIN_COMPATIBLE_API: minimal supported API version by installed Riru, 0 if not installed or version < v23.2
-# RIRU_VERSION_CODE: version code of installed Riru, 0 if not installed or version < v23.2
-# RIRU_VERSION_NAME: version name of installed Riru, "" if not installed or version < v23.2
-
-extract "$ZIPFILE" 'riru.sh' "$TMPDIR"
-. $TMPDIR/riru.sh
-
-# Functions from util_functions.sh (it will be loaded by riru.sh)
-check_riru_version
+check_android_version
 enforce_install_from_magisk_app
 
 # Check architecture
@@ -40,37 +47,30 @@ ui_print "- Extracting module files"
 extract "$ZIPFILE" 'module.prop' "$MODPATH"
 extract "$ZIPFILE" 'uninstall.sh' "$MODPATH"
 
-# Riru v24+ load files from the "riru" folder in the Magisk module folder
-# This "riru" folder is also used to determine if a Magisk module is a Riru module
-
-mkdir "$MODPATH/riru"
-mkdir "$MODPATH/riru/lib"
-mkdir "$MODPATH/riru/lib64"
-
-DEXPATH="$MODPATH/riru/dexfile"
-mkdir "$DEXPATH"
-
-ui_print "- Extractin dex files"
-extract "$ZIPFILE" "inject.dex" "$DEXPATH" true
+mkdir -p "$MODPATH/zygisk"
+ui_print "- Extracting daemon libraries"
 
 if [ "$ARCH" = "arm" ] || [ "$ARCH" = "arm64" ]; then
-  ui_print "- Extracting arm libraries"
-  extract "$ZIPFILE" "lib/armeabi-v7a/lib$RIRU_MODULE_LIB_NAME.so" "$MODPATH/riru/lib" true
+  extract "$ZIPFILE" "lib/armeabi-v7a/libtemplate.so" "$MODPATH/zygisk" true
+  mv "$MODPATH/zygisk/libtemplate.so" "$MODPATH/zygisk/armeabi-v7a.so"
 
   if [ "$IS64BIT" = true ]; then
-    ui_print "- Extracting arm64 libraries"
-    extract "$ZIPFILE" "lib/arm64-v8a/lib$RIRU_MODULE_LIB_NAME.so" "$MODPATH/riru/lib64" true
+    extract "$ZIPFILE" "lib/arm64-v8a/libtemplate.so" "$MODPATH/zygisk" true
+    mv "$MODPATH/zygisk/libtemplate.so" "$MODPATH/zygisk/arm64-v8a.so"
   fi
 fi
 
 if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
-  ui_print "- Extracting x86 libraries"
-  extract "$ZIPFILE" "lib/x86/lib$RIRU_MODULE_LIB_NAME.so" "$MODPATH/riru/lib" true
+  extract "$ZIPFILE" "lib/x86_64/libtemplate.so" "$MODPATH/zygisk" true
+  mv "$MODPATH/zygisk/libtemplate.so" "$MODPATH/zygisk/x86_64.so"
 
   if [ "$IS64BIT" = true ]; then
-    ui_print "- Extracting x64 libraries"
-    extract "$ZIPFILE" "lib/x86_64/lib$RIRU_MODULE_LIB_NAME.so" "$MODPATH/riru/lib64" true
+    extract "$ZIPFILE" "lib/x86/libtemplate.so" "$MODPATH/zygisk" true
+    mv "$MODPATH/zygisk/libtemplate.so" "$MODPATH/zygisk/x86.so"
   fi
 fi
 
+
 set_perm_recursive "$MODPATH" 0 0 0755 0644
+
+ui_print "- Finish"
