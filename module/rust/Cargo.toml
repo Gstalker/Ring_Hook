@@ -2,13 +2,14 @@
 name = "zygisk"
 version = "0.1.0"
 edition = "2021"
-authors = ["Kazurin Nanako <71819243+Kazurin-775@users.noreply.github.com>"]
+authors = ["Gstalker <dreamstalker1003@qq.com>"]
 
 [dependencies]
 bitflags = "1.3.2"
 jni = "0.19.0"
 log = "0.4.14"
 static_init = "1.0.2"
+lazy_static = "1.4.0"
 
 [lib]
 name = "template"

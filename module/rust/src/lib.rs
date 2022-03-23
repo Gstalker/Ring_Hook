@@ -1,13 +1,12 @@
 #[macro_use]
 extern crate log;
+#[macro_use]
+extern crate lazy_static;
 extern crate android_logger;
 
 mod ring;
 mod zygisk;
 
-use jni::{
-    JNIEnv
-};
 use std::os::unix::io::RawFd;
 use ring::ZygiskEntry;
 

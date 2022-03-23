@@ -11,7 +11,7 @@ use super::{
 pub fn module_entry_impl(module: &'static dyn ZygiskModule, table: *const (), env: *mut ()) {
     // Cast arguments to their concrete types
     let table: &'static RawApiTable = unsafe { &*table.cast() };
-    let env: JNIEnv = unsafe { JNIEnv::from_raw(env.cast()).unwrap() };
+    // let env: JNIEnv = unsafe { JNIEnv::from_raw(env.cast()).unwrap() };
 
     // Currently a Zygisk module doesn't have a destructor, so we just have to
     // leak some heap memory. (And yes, we have to do `Box::leak` TWICE: one'

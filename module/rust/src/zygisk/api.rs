@@ -25,6 +25,7 @@ pub struct ZygiskApi<'a> {
     inner: &'a RawApiTable,
 }
 
+#[allow(dead_code)]
 impl<'a> ZygiskApi<'a> {
     /// Connect to a root companion process and get a Unix domain socket for IPC.
     ///
@@ -163,6 +164,7 @@ impl<'a> ZygiskApi<'a> {
     }
 }
 
+#[allow(dead_code)]
 impl<'a> ZygiskApi<'a> {
     pub(crate) fn from_raw(inner: &'a RawApiTable) -> ZygiskApi {
         ZygiskApi { inner }

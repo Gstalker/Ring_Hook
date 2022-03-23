@@ -76,6 +76,7 @@ pub struct ServerSpecializeArgs<'a> {
 // Note: the original definition is `enum Option : int`. This is a best-effort approach.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[allow(dead_code)]
 pub enum ZygiskOption {
     /// Force Magisk's denylist unmount routines to run on this process.
     ///
