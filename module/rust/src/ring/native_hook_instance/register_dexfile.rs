@@ -1,11 +1,8 @@
 use super::native_hook;
 use super::native_hook::{
     InlineHookConfig,
-    NativeHookType::Inline,
 };
-use std::ffi::CStr;
 use std::mem::transmute;
-use std::os::raw::c_char;
 use jni::JNIEnv;
 use crate::ring::native_hook::{NativeHookConfig, SymbolInfo};
 
@@ -32,13 +29,13 @@ pub extern "C" fn register_dex_file_hooker(thiz: *mut(),dexfile: *mut(), class_l
 
 pub fn register(env: &mut JNIEnv,path :&String) {
     native_hook::Manager::from_instance().lock().unwrap().register_native_hooker(
-        native_hook::NativeHookConfig::from(Inline(InlineHookConfig{
+        native_hook::NativeHookConfig::from_inline_config(InlineHookConfig{
             hook: register_dex_file_hooker as usize,
             target: None,
             symbol_info: Some(SymbolInfo::from_symbol_name_with_image_name(
                 "_ZN3art11ClassLinker15RegisterDexFileERKNS_7DexFileENS_6ObjPtrINS_6mirror11ClassLoaderEEE".to_string(),
                 "libart.so".to_string()
             )),
-        }))
+        })
     );
 }

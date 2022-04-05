@@ -1,4 +1,3 @@
-mod android_log_print;
 mod register_native_hooker_instance;
 mod register_dexfile;
 

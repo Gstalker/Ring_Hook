@@ -4,19 +4,27 @@ mod symbol_info;
 pub use symbol_info::SymbolInfo;
 pub use manager::Manager;
 
+
 pub struct NativeHookConfig{
     hook_type: NativeHookType,
-    backup_trampoline: usize,
+    backup_trampoline: usize, // FIXME: Should be Option<usize>
     activate_status: bool,
 }
 
 impl NativeHookConfig {
-    pub fn from(hook_type: NativeHookType) -> Self {
+    pub fn from_inline_config(inline_config: InlineHookConfig) -> Self {
         Self{
-            hook_type,
+            hook_type: NativeHookType::Inline(inline_config),
             activate_status: false,
-            backup_trampoline: 0
+            backup_trampoline: 0,
         }
+    }
+    pub fn from_symtable_hijack_config(config: SymTableHijackConfig) {
+        // FIXME: To be Implement
+    }
+
+    pub fn from_plt_table_hijack_config(config: PltTableHijackConfig) {
+        // FIXME: To be Implement
     }
     pub fn get_hook_config(&mut self) -> &mut NativeHookType{
         &mut self.hook_type
