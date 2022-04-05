@@ -1,6 +1,13 @@
 use super::utils::enable_logger;
-use crate::zygisk::{AppSpecializeArgs, ZygiskApi, ZygiskModule};
 use super::init_helper::INIT_HELPER;
+use crate::zygisk::{AppSpecializeArgs, ZygiskApi, ZygiskModule,ZygiskOption};
+use super::manager::RingManager;
+
+use std::ffi::CStr;
+use std::sync::Mutex;
+use jni::JNIEnv;
+use crate::ring::manager::Config;
+
 
 pub struct ZygiskEntry{}
 
@@ -10,14 +17,58 @@ impl ZygiskModule for ZygiskEntry {
         enable_logger();
         INIT_HELPER.lock().unwrap().update_env(env);
         let flag = api.get_flags();
-        info!(target:"RING","Ring has been loaded!");
-        let dir = api.get_module_dir();
-        info!(target:"RING","module_dir‘s fd : {}",dir);
     }
     fn pre_app_specialize(&self, api: ZygiskApi, args: &mut AppSpecializeArgs) {
-        info!(target:"RING","Hello world from pre-AppsecializeArgs");
+        let env = unsafe {
+            JNIEnv::from_raw(INIT_HELPER.lock().unwrap().env().unwrap().cast()).unwrap()
+        };
+
+        let nice_name_c_str = match env.get_string_utf_chars(*args.nice_name) {
+            Ok(ptr) => {ptr}
+            Err(e) => {
+                error!("app_name_c_str is nullptr! skip this Application");
+                return;
+            }
+        };
+        let app_name = unsafe{CStr::from_ptr(nice_name_c_str.cast()).to_str().unwrap().to_string()};
+        let mut app_name_guard = APPLICATION_NAME.lock().unwrap();
+        *app_name_guard = app_name.clone();
+        env.release_string_utf_chars(*args.nice_name,nice_name_c_str).unwrap();
+        trace!("app_name: {}", app_name);
     }
     fn post_app_specialize(&self, api: ZygiskApi, args: &AppSpecializeArgs) {
+        let mut manager_guard = RingManager::from_instance().lock().unwrap();
+        let manager = &mut *manager_guard;
+        let mut app_name_guard = APPLICATION_NAME.lock().unwrap();
+        let app_name = &mut *app_name_guard;
+        let mut env = unsafe {
+            JNIEnv::from_raw(INIT_HELPER.lock().unwrap().env().unwrap().cast()).unwrap()
+        };
+
+
+        let (native_config,dalvik_config,root_path) = match INIT_HELPER.lock().unwrap().read_config(app_name.clone()) {
+            None => {return;}
+            Some(config) => {config}
+        };
+
+        manager.setup(
+            Config::default(root_path)
+                .enable_dalvik_hook(dalvik_config)
+                .enable_native_hook(native_config)
+        );
+
+
+
+
+        let unload = manager.process(&mut env);
+
+        if unload == false {
+            api.set_option(ZygiskOption::DlcloseModuleLibrary);
+        }
         INIT_HELPER.lock().unwrap().deactivate();
     }
+}
+
+lazy_static!{
+    static ref APPLICATION_NAME : Mutex<String> = Mutex::new(String::new());
 }
