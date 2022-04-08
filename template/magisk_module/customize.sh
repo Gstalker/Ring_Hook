@@ -70,6 +70,11 @@ if [ "$ARCH" = "x86" ] || [ "$ARCH" = "x64" ]; then
   fi
 fi
 
+mkdir -p "$MODPATH/dex"
+ui_print "- Extracting dexFiles"
+
+extract "$ZIPFILE" "dex/ring.dex" "$MODPATH/dex" true
+
 
 set_perm_recursive "$MODPATH" 0 0 0755 0644
 

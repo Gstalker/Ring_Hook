@@ -5,12 +5,14 @@ on:
     paths:
       - "**.gradle"
       - "**.rs"
+      - "**.java"
       - "**/Cargo.toml"
       - ".github/workflows/**"
   pull_request:
     paths:
       - "**.gradle"
       - "**.rs"
+      - "**.java"
       - "**/Cargo.toml"
       - ".github/workflows/**"
 
