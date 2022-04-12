@@ -1,10 +1,11 @@
-use super::utils::enable_logger;
+use super::utils::{enable_logger,fd_test};
 use super::init_helper::INIT_HELPER;
 use crate::zygisk::{AppSpecializeArgs, ZygiskApi, ZygiskModule,ZygiskOption};
 use super::manager::RingManager;
 
 use std::ffi::CStr;
 use std::sync::Mutex;
+use std::os::unix::io::RawFd;
 use jni::JNIEnv;
 use crate::ring::manager::Config;
 
@@ -18,6 +19,7 @@ impl ZygiskModule for ZygiskEntry {
         INIT_HELPER.lock().unwrap().update_env(env);
         let flag = api.get_flags();
     }
+
     fn pre_app_specialize(&self, api: ZygiskApi, args: &mut AppSpecializeArgs) {
         let env = unsafe {
             JNIEnv::from_raw(INIT_HELPER.lock().unwrap().env().unwrap().cast()).unwrap()
@@ -35,7 +37,10 @@ impl ZygiskModule for ZygiskEntry {
         *app_name_guard = app_name.clone();
         env.release_string_utf_chars(*args.nice_name,nice_name_c_str).unwrap();
         trace!("app_name: {}", app_name);
+        let dir_fd = api.get_module_dir();
+        fd_test(dir_fd as RawFd);
     }
+
     fn post_app_specialize(&self, api: ZygiskApi, args: &AppSpecializeArgs) {
         let mut manager_guard = RingManager::from_instance().lock().unwrap();
         let manager = &mut *manager_guard;
@@ -44,7 +49,6 @@ impl ZygiskModule for ZygiskEntry {
         let mut env = unsafe {
             JNIEnv::from_raw(INIT_HELPER.lock().unwrap().env().unwrap().cast()).unwrap()
         };
-
 
         let (native_config,dalvik_config,root_path) = match INIT_HELPER.lock().unwrap().read_config(app_name.clone()) {
             None => {return;}
@@ -56,9 +60,6 @@ impl ZygiskModule for ZygiskEntry {
                 .enable_dalvik_hook(dalvik_config)
                 .enable_native_hook(native_config)
         );
-
-
-
 
         let unload = manager.process(&mut env);
 
