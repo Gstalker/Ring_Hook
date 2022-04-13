@@ -19,10 +19,13 @@ impl NativeHookConfig {
             backup_trampoline: 0,
         }
     }
+
+    #[allow(unused_variables)]
     pub fn from_symtable_hijack_config(config: SymTableHijackConfig) {
         // FIXME: To be Implement
     }
 
+    #[allow(unused_variables)]
     pub fn from_plt_table_hijack_config(config: PltTableHijackConfig) {
         // FIXME: To be Implement
     }

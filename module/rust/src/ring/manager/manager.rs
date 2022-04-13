@@ -3,6 +3,7 @@ use super::{
     config::Config,
     native_hook_instance,
     native_hook,
+    art_hook,
 };
 use std::sync::Mutex;
 use crate::zygisk::macros::JNIEnv;
@@ -48,6 +49,15 @@ impl RingManager{
             native_hook_instance::register(env,self.config.app_data_path.clone());
             // 打入native_hook
             native_hook::Manager::from_instance().lock().unwrap().process_hookers();
+        }
+        if self.config.lunar{
+            match art_hook::load_dex_files(env,self.config.dex_files_data.clone()) {
+                Ok(_) => {}
+                Err(e) => {
+                    error!("cannot load_dex_files! error: {}",e);
+                }
+            }
+            art_hook::invoke_java_entry(env);
         }
         self.config.ring && self.config.lunar
     }

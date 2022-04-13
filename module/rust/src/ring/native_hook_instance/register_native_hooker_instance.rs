@@ -4,7 +4,7 @@ use super::{
 };
 
 pub fn register(env: &mut JNIEnv, path: String) -> bool {
-    let mut result = true;
+    let result = true;
     info!("Register hooks");
     register_dexfile::register(env,&path);
     info!("log hook finished!");

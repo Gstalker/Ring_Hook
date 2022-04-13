@@ -4,7 +4,7 @@ use super::native_hook::{
 };
 use std::mem::transmute;
 use jni::JNIEnv;
-use crate::ring::native_hook::{NativeHookConfig, SymbolInfo};
+use crate::ring::native_hook::{SymbolInfo};
 
 #[inline(never)]
 #[no_mangle]
@@ -27,6 +27,8 @@ pub extern "C" fn register_dex_file_hooker(thiz: *mut(),dexfile: *mut(), class_l
     return backup(thiz,dexfile,class_loader);
 }
 
+
+#[allow(unused_variables)]
 pub fn register(env: &mut JNIEnv,path :&String) {
     native_hook::Manager::from_instance().lock().unwrap().register_native_hooker(
         native_hook::NativeHookConfig::from_inline_config(InlineHookConfig{

@@ -16,23 +16,34 @@ pub fn enable_logger() {
 
 
 use std::os::unix::io::RawFd;
+use std::fs::File;
+use std::io::Read;
+use std::os::unix::prelude::FromRawFd;
 use nix::fcntl::{
     openat,OFlag
 };
-use nix::unistd::close;
 use nix::sys::stat::Mode;
+use anyhow::{Result};
 
-pub fn fd_test(fd: RawFd) {
+pub fn read_dex_file(fd: RawFd) -> Result<Vec<u8>>{
     let ring = match openat(fd,"./dex/ring.dex",OFlag::O_RDONLY,Mode::empty()) {
         Ok(fd) => {
             info!("hello_world from ~/dex/ring.dex : {}", fd);
             fd
         },
-        Err(_) => {
+        Err(e) => {
             error!("cannot open ring.dex!");
-            return;
+            return Err(e.into());
         }
     };
-    close(ring);
-
+    let mut file = unsafe{ File::from_raw_fd(ring)};
+    let mut inner: Vec<u8> = Vec::new();
+    match file.read_to_end(&mut inner) {
+        Ok(_) => {
+            Ok(inner)
+        }
+        Err(e) => {
+            Err(e.into())
+        }
+    }
 }
