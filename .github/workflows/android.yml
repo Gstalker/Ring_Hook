@@ -33,7 +33,7 @@ jobs:
         uses: ATiltedTree/setup-rust@v1
         with:
           rust-version: stable
-          targets: 'armv7-linux-androideabi i686-linux-android aarch64-linux-android x86_64-linux-android'
+#          targets: 'armv7-linux-androideabi i686-linux-android aarch64-linux-android x86_64-linux-android'
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
       - name: Grant execute permission for gradlew

@@ -53,7 +53,7 @@ afterEvaluate {
         def buildType = "${variant.buildType.name.capitalize()}"
         tasks["generate${productFlavor}${buildType}Assets"].dependsOn(tasks["cargoBuild"])
         tasks["strip${variantCapped}DebugSymbols"].dependsOn(tasks["generate${productFlavor}${buildType}Assets"])
-        tasks["cargoBuild"].dependsOn(tasks["externalNativeBuild${buildType}"])
+        tasks["cargoBuild"].dependsOn(tasks["externalNativeBuildRelease"])
     }
 
     android.applicationVariants.forEach { variant ->
