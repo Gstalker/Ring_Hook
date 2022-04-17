@@ -281,3 +281,8 @@ JNINativeMethod yahfa_hookmain_methods[] ={
             &Java_lab_galaxy_yahfa_HookMain_init,
         },
 };
+
+__attribute__ ((visibility("default")))
+JNINativeMethod* get_yahfa_hook_main_methods(){
+    return yahfa_hookmain_methods;
+}

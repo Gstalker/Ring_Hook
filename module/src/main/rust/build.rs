@@ -33,7 +33,7 @@ fn link_yahfa() {
     println!("cargo:warning=lib_path={}", yahfa_static_lib.display());
     println!("cargo:rustc-link-search=native={}",yahfa_static_lib.to_str().unwrap());
     println!("cargo:rustc-link-lib=static=yahfa");
-    println!("cargo:rustc-link-lib=dylib=stdc++");
+    // println!("cargo:rustc-link-lib=dylib=stdc++");
 }
 
 fn main() {

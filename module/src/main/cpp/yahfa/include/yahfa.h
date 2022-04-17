@@ -7,7 +7,11 @@
 
 #include "jni.h"
 
-extern JNINativeMethod yahfa_hookmain_methods[];
-extern JNINativeMethod yahfa_utils_methods[];
+__attribute__ ((visibility("default")))
+JNINativeMethod* get_yahfa_hook_main_methods();
+
+__attribute__ ((visibility("default")))
+JNINativeMethod* get_yahfa_utils_methods();
+
 
 #endif //UNPACKER_AADEBUGMODULE_YAHFA_H

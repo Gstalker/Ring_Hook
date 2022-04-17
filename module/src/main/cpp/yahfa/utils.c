@@ -132,3 +132,8 @@ JNINativeMethod yahfa_utils_methods[] ={
                 &Java_lab_galaxy_yahfa_HookMain_00024Utils_getThread,
         },
 };
+
+__attribute__ ((visibility("default")))
+JNINativeMethod* get_yahfa_utils_methods(){
+    return yahfa_utils_methods;
+}
