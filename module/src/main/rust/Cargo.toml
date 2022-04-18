@@ -19,3 +19,6 @@ android_logger = "0.11"
 [lib]
 name = "template"
 crate_type = ["dylib"]
+
+[profile.release]
+strip = "symbols"

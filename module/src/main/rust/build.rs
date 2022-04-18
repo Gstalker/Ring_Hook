@@ -26,14 +26,16 @@ fn link_yahfa() {
     let arch_dir = match target_arch.as_str() {
         "arm" => "armeabi-v7a",
         "aarch64" => "arm64-v8a",
-        _ => { &target_arch }
+        "x86" => "x86",
+        "x86_64" => "x86_64",
+        _ => { panic!("do not support this arch") }
     };
     let cxx_static_lib_root = get_cxx_static_lib_root_path();
     let yahfa_static_lib = cxx_static_lib_root.join(arch_dir);
-    println!("cargo:warning=lib_path={}", yahfa_static_lib.display());
-    println!("cargo:rustc-link-search=native={}",yahfa_static_lib.to_str().unwrap());
-    println!("cargo:rustc-link-lib=static=yahfa");
-    // println!("cargo:rustc-link-lib=dylib=stdc++");
+    // println!("cargo:warning=lib_path={}", yahfa_static_lib.display());
+    println!("cargo:rustc-link-search={}",yahfa_static_lib.to_str().unwrap());
+    println!("cargo:rustc-link-lib=yahfa");
+    println!("cargo:rustc-link-lib=dlfunc");
 }
 
 fn main() {
