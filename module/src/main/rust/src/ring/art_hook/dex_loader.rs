@@ -131,13 +131,13 @@ impl DexLoader {
         let name = String::from(&*entry_point_class_name_guard);
         let entry_point_class = self.find_class_from_hooker_class_loader(
             env,
-            name
+            name.clone()
         ).unwrap();
 
-        trace!("do invoke!");
+        trace!("do invoke! {}.{}",name,"init ()V");
         env.call_static_method(
             entry_point_class,
-            "Init",
+            "init",
             "()V",
             &[]
         );

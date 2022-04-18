@@ -1,6 +1,4 @@
 use jni;
-use std::sync::Mutex;
-use std::ffi::CString;
 use std::ffi::CStr;
 
 #[link(name = "yahfa")]
