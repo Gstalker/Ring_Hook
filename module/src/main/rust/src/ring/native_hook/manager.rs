@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 use std::mem::transmute;
+use dobby_rs::hook;
 
 use super::{
     NativeHookConfig,
@@ -10,6 +11,18 @@ use super::{
 pub struct Manager {
     // 通过Config 来找到 Hooker
     native_hookers: Vec<NativeHookConfig>,
+}
+
+pub fn register_native_hooker(config: NativeHookConfig) {
+    NATIVE_HOOKERS_MANAGER.lock().unwrap().register_native_hooker(config)
+}
+
+pub fn get_backup_trampoline_by_hook_function_addr(hooker_addr: usize) -> Option<usize> {
+    NATIVE_HOOKERS_MANAGER.lock().unwrap().get_backup_trampoline_by_hook_function_addr(hooker_addr)
+}
+
+pub fn process_hookers() -> usize {
+    NATIVE_HOOKERS_MANAGER.lock().unwrap().process_hookers()
 }
 
 impl Manager {
@@ -25,10 +38,6 @@ impl Manager {
         None
     }
 
-    pub fn from_instance() -> &'static Mutex<Manager> {
-        &*NATIVE_HOOKERS_MANAGER
-    }
-
     pub fn register_native_hooker(&mut self, config: NativeHookConfig) {
         self.native_hookers.push(config);
     }
@@ -36,7 +45,7 @@ impl Manager {
     pub fn get_backup_trampoline_by_hook_function_addr(&self, hooker_addr: usize) -> Option<usize> {
         let mut result = None;
         for i in &self.native_hookers {
-            let hooker_addr_iter = match &i.hook_type {
+            let hooker_addr_iter = match i.get_hook_config() {
                 NativeHookType::Inline(inner) => {
                     inner.hook
                 }
@@ -48,7 +57,7 @@ impl Manager {
                 }
             };
             if hooker_addr == hooker_addr_iter {
-                result = Some(i.backup_trampoline);
+                result = Some(i.get_backup_trampoline());
                 break;
             }
         }
@@ -60,10 +69,11 @@ impl Manager {
         let mut hook_count: usize = 0;
         for config in &mut self.native_hookers {
             // 已经hook过的不再进行hook
-            if config.get_activate_status() {
+            // 状态设置为关闭的不再进行hook
+            if config.get_activate_status() && !config.get_activate_switch() {
                 continue;
             }
-            match config.get_hook_config() {
+            match config.get_hook_config_mut() {
                 NativeHookType::Inline(inner) => {
                     if let Some(backup) = Manager::do_inline_hook(inner) {
                         config.set_activate_status(true);

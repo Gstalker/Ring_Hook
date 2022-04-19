@@ -48,7 +48,7 @@ impl RingManager{
             // 注册inative hookers
             native_hook_instance::register(env,self.config.app_data_path.clone());
             // 打入native_hook
-            native_hook::Manager::from_instance().lock().unwrap().process_hookers();
+            native_hook::process_hookers();
         }
         if self.config.lunar{
             match art_hook::load_dex_files(env,self.config.dex_files_data.clone()) {
