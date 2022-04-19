@@ -6,3 +6,4 @@ dependencyResolutionManagement {
     }
 }
 include ':module'
+include ':apk_for_test'
