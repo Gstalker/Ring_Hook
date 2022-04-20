@@ -7,8 +7,8 @@ android {
 
     defaultConfig {
         applicationId "bin.gstalker.ring.test"
-        minSdk 26
-        targetSdk 31
+        minSdk 19
+        targetSdk 28
         versionCode 1
         versionName "1.0"
 
