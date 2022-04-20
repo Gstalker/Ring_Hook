@@ -70,7 +70,7 @@ impl Manager {
         for config in &mut self.native_hookers {
             // 已经hook过的不再进行hook
             // 状态设置为关闭的不再进行hook
-            if config.get_activate_status() && !config.get_activate_switch() {
+            if config.get_activate_status() || !config.get_activate_switch() {
                 continue;
             }
             match config.get_hook_config_mut() {
