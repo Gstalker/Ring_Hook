@@ -7,6 +7,7 @@ import bin.gstalker.ring.hooker.ClassLoaderHooker;
 public class RingEntry {
     public static void init() {
         Logger.wtf("Process JavaLayer Hooker");
+        CrackAndroidBlackLists.crack();
         registerJavaHookers();
         HookManager.processHookers();
         ClassFinder.setActivate(true);
