@@ -1,0 +1,7 @@
+plugins {
+    id 'org.gradle.java-library'
+}
+
+dependencies {
+    compileOnly project(":hiddenapi:stubs")
+}

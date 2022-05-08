@@ -5,5 +5,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-include ':module'
-include ':apk_for_test'
+
+include ':module', ':apk_for_test', ':hiddenapi:stubs', ':hiddenapi:bridge'

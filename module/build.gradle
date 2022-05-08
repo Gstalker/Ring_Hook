@@ -34,6 +34,15 @@ android {
     ndkVersion '22.1.7171670'
 }
 
+dependencies {
+//    annotationProcessor 'dev.rikka.tools.refine:annotation-processor:3.1.1'
+//    compileOnly 'dev.rikka.tools.refine:annotation:3.1.1'
+//    implementation 'dev.rikka.hidden:compat:2.3.1'
+//    compileOnly 'dev.rikka.hidden:stub:2.3.1'
+    compileOnly project(':hiddenapi:stubs')
+    implementation project(':hiddenapi:bridge')
+}
+
 cargo {
     verbose = true
     module  = "./src/main/rust"       // Or whatever directory contains your Cargo.toml
