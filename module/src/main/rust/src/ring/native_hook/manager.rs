@@ -1,3 +1,4 @@
+use std::ffi::c_void;
 use std::sync::Mutex;
 use std::mem::transmute;
 use dobby_rs::hook;
@@ -23,6 +24,10 @@ pub fn get_backup_trampoline_by_hook_function_addr(hooker_addr: usize) -> Option
 
 pub fn process_hookers() -> usize {
     NATIVE_HOOKERS_MANAGER.lock().unwrap().process_hookers()
+}
+
+pub fn resolve_symbol(image_name: &String, symbol_name: &String) -> Option<*mut c_void> {
+    dobby_rs::resolve_symbol(image_name.as_str(),symbol_name.as_str())
 }
 
 impl Manager {
@@ -117,7 +122,7 @@ impl Manager {
             let symbol_name = symbol_info.get_symbol_name();
             if let Some(image_name) = symbol_info.get_image_name() {
                 trace!("reslove symbol {}::{}", image_name,symbol_name);
-                let target = match dobby_rs::resolve_symbol(image_name.as_str(), symbol_name.as_str()) {
+                let target = match resolve_symbol(image_name, symbol_name) {
                     None => {
                         error!("Cannot resolve symbol: {}::{}",image_name,symbol_name);
                         return None;

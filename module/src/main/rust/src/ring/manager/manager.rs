@@ -44,12 +44,6 @@ impl RingManager{
 
     pub fn process(&mut self, env: &mut JNIEnv) -> bool{
         info!("Process Ring Hook!");
-        if self.config.ring{
-            // 注册inative hookers
-            native_hook_instance::register(env,self.config.app_data_path.clone());
-            // 打入native_hook
-            native_hook::process_hookers();
-        }
         if self.config.lunar{
             match art_hook::load_dex_files(env,self.config.dex_files_data.clone()) {
                 Ok(_) => {}
@@ -58,6 +52,12 @@ impl RingManager{
                 }
             }
             art_hook::invoke_java_entry(env);
+        }
+        if self.config.ring{
+            // 注册inative hookers
+            native_hook_instance::register(env,self.config.app_data_path.clone());
+            // 打入native_hook
+            native_hook::process_hookers();
         }
         self.config.ring && self.config.lunar
     }

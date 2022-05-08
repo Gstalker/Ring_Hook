@@ -1,5 +1,7 @@
 package bin.gstalker.ring.test;
 
+import android.util.Log;
+
 public class Gstalker {
     static {
         instance = new Gstalker();
@@ -13,6 +15,7 @@ public class Gstalker {
     }
 
     public static void start_test(String test_string){
+        Log.wtf("GSTALKER","Hello world from Gstalker::start_test");
         instance.target_function(test_string);
     }
 

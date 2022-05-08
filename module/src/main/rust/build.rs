@@ -36,6 +36,7 @@ fn link_yahfa() {
     println!("cargo:rustc-link-search={}",yahfa_static_lib.to_str().unwrap());
     println!("cargo:rustc-link-lib=yahfa");
     println!("cargo:rustc-link-lib=dlfunc");
+    println!("cargo:rustc-link-static-lib=classfinder");
 }
 
 fn main() {
