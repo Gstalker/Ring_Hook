@@ -11,6 +11,7 @@ use jni::{
 use jni::objects::{GlobalRef};
 use super::yahfa_sys;
 use super::classfinder_sys;
+use super::dex_loader_sys;
 
 pub fn load_dex_files(env: &JNIEnv, dex_files: Vec<Vec<u8>>) -> Result<(),Error>{
     DEX_LOADER.lock().unwrap().set_dex_files(dex_files);
@@ -43,7 +44,7 @@ pub fn find_class<'a>(env: &'a JNIEnv, class_name: String) -> anyhow::Result<JCl
 }
 
 pub fn get_hooker_class_loader() -> &'static Option<GlobalRef> {
-    unsafe{ transmute(DEX_LOADER.lock().unwrap().get_class_loader()) }
+    unsafe{ transmute(&*CLASS_LOADER.lock().unwrap() ) }
 }
 
 
@@ -108,6 +109,7 @@ impl DexLoader {
 
         let hooker_class_loader_global_ref = env.new_global_ref(hooker_class_loader)?;
         self.class_loader = Some(hooker_class_loader_global_ref);
+        *(CLASS_LOADER.lock().unwrap()) = self.class_loader.clone();
 
         trace!("delete local_ref");
         env.delete_local_ref(system_class_loader)?;
@@ -138,6 +140,9 @@ impl DexLoader {
         trace!("register classfinder methods");
         let (classfinder_class_name, class_finder_native_methods) = classfinder_sys::get_classfinder_methods_vec();
         self.register_hooker_native_methods(env,class_finder_native_methods,classfinder_class_name)?;
+        trace!("register dex_loader methods");
+        let (class_name, methods) = dex_loader_sys::get_methods();
+        self.register_hooker_native_methods(env,methods,class_name)?;
         Ok(())
     }
 
@@ -185,4 +190,5 @@ lazy_static! {
     static ref JAVA_ENTRY_POINT_CLASS_NAME: Mutex<String> = Mutex::new(String::from("bin.gstalker.ring.RingEntry"));
     static ref DEX_LOADER_INITIALIZED: Mutex<bool> = Mutex::new(false);
     static ref DEX_LOADER: Mutex<DexLoader> = Mutex::new(DexLoader::new().unwrap());
+    static ref CLASS_LOADER: Mutex<Option<GlobalRef>> = Mutex::new(None);
 }

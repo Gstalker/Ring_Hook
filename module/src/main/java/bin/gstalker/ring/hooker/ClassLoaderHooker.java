@@ -15,7 +15,7 @@ public class ClassLoaderHooker implements Hooker {
     }
 
     @Override
-    public Object targetMethod() throws Exception {
+    public Object targetMethod(ClassLoader ignored) throws Exception {
         return Class.forName("java.lang.ClassLoader").getDeclaredConstructor(Class.forName("java.lang.ClassLoader"));
     }
 
@@ -31,14 +31,15 @@ public class ClassLoaderHooker implements Hooker {
                 "backup", Object.class, ClassLoader.class);
     }
 
-    public static int hook(Object thiz, ClassLoader parent) throws Throwable {
+    public static Object hook(Object thiz, ClassLoader parent) throws Throwable {
         Logger.w("ClassLoader(parent) captured!");
         Logger.w("    PrePare for Processing Hookers!");
-        setDefineClassNativeHookerReady();
+//        setDefineClassNativeHookerReady();
+        LoadClassHooker.setActivate(true);
         return backup(thiz, parent);
     }
 
-    public static int backup(Object thiz, ClassLoader parent) throws Throwable {
+    public static Object backup(Object thiz, ClassLoader parent) throws Throwable {
         try{
             Log.wtf("RING_TEST","Fatal: this is a PlaceHolder for JavaLayerHooker");
             System.exit(1919810);
@@ -49,5 +50,5 @@ public class ClassLoaderHooker implements Hooker {
         throw new ClassNotFoundException("Should not be here!");
     }
 
-    private static native void setDefineClassNativeHookerReady();
+//    private static native void setDefineClassNativeHookerReady();
 }

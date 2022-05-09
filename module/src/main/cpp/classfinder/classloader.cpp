@@ -16,7 +16,7 @@ static jclass findTargetClassByName(C_JNIEnv *env, jobject classLoader, jstring 
     classOfClassLoader = (*env)->GetObjectClass((JNIEnv *) env, classLoader);
     if ((*env)->ExceptionCheck((JNIEnv *) env)) {
         (*env)->ExceptionClear((JNIEnv *) env);
-        goto cleanClassOfClassLoader;
+        goto done;
     }
 
     LOGV("Get loadClass of this classloader");
@@ -34,8 +34,9 @@ static jclass findTargetClassByName(C_JNIEnv *env, jobject classLoader, jstring 
     }
 
     cleanClassOfClassLoader:
-    LOGV("result: %p", targetClass);
     (*env)->DeleteLocalRef((JNIEnv *) env, classOfClassLoader);
+    done:
+    LOGV("result: %p", targetClass);
 
     return targetClass;
 }

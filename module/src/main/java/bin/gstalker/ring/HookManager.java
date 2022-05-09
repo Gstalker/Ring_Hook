@@ -14,7 +14,14 @@ public class HookManager {
         hookers_enable_status = new Vector<>();
     }
 
-    private void processHookersInner() {
+    private void processHookersInner(ClassLoader loader) {
+        ClassLoader providedLoader;
+        if(loader == null){
+            providedLoader = getHookerClassLoader();
+        }
+        else{
+            providedLoader = loader;
+        }
         for (int i = 0; i < hookers.size(); ++i) {
             Hooker hooker = hookers.get(i);
             if(hookers_enable_status.get(i)){
@@ -23,7 +30,7 @@ public class HookManager {
             try{
                 Logger.i("Process hooker: " + hooker.getClass().getSimpleName());
                 HookMain.backupAndHook(
-                        hooker.targetMethod(),
+                        hooker.targetMethod(loader),
                         hooker.hookMethod(),
                         hooker.backupMethod()
                 );
@@ -41,7 +48,11 @@ public class HookManager {
 //    }
 
     public static void processHookers() {
-        instance.processHookersInner();
+        instance.processHookersInner(null);
+    }
+
+    public static void processRemainHookers(ClassLoader loader){
+        instance.processHookersInner(loader);
     }
 
     public static void registerHooker(Hooker hook) {
@@ -49,4 +60,6 @@ public class HookManager {
         instance.hookers.add(hook);
         instance.hookers_enable_status.add(false);
     }
+
+    public static native ClassLoader getHookerClassLoader();
 }

@@ -14,7 +14,7 @@ public class LogE implements Hooker{
     }
 
     @Override
-    public Object targetMethod() throws Exception{
+    public Object targetMethod(ClassLoader ignored) throws Exception{
         return Class.forName("android.util.Log").getDeclaredMethod(
                 "e", String.class, String.class);
     }

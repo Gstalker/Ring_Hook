@@ -36,9 +36,17 @@ public class StartTestHooker implements Hooker {
     }
 
     @Override
-    public Object targetMethod() throws Exception {
+    public Object targetMethod(ClassLoader loader) throws Exception {
         Log.wtf("RING_TEST","getting targetMethod");
-        return ClassFinder.findClass("bin.gstalker.ring.test.Gstalker")
+        try{
+            loader.loadClass("bin.gstalker.ring.test.Gstalker")
+                    .getDeclaredMethod("start_test", String.class).invoke(null,"fuck you jit!");
+        }
+        catch(Throwable ignored){
+
+        }
+
+        return loader.loadClass("bin.gstalker.ring.test.Gstalker")
                 .getDeclaredMethod("start_test", String.class);
     }
 

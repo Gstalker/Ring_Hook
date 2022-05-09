@@ -51,13 +51,15 @@ impl RingManager{
                     error!("cannot load_dex_files! error: {}",e);
                 }
             }
-            art_hook::invoke_java_entry(env);
         }
         if self.config.ring{
             // 注册inative hookers
             native_hook_instance::register(env,self.config.app_data_path.clone());
             // 打入native_hook
             native_hook::process_hookers();
+        }
+        if self.config.lunar{
+            art_hook::invoke_java_entry(env);
         }
         self.config.ring && self.config.lunar
     }

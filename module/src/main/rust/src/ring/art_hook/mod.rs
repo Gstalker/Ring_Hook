@@ -1,6 +1,7 @@
 mod dex_loader;
 mod yahfa_sys;
 mod classfinder_sys;
+mod dex_loader_sys;
 
 pub use dex_loader::{
     load_dex_files,

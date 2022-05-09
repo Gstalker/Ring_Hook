@@ -19,6 +19,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onTag(View view) {
-        Gstalker.start_test("hello_world from MainActivity out of thread");
+        try{
+            Gstalker.start_test("hello_world from MainActivity out of thread");
+        }
+        catch( Throwable t ){
+            Log.wtf("GSTALKER", "test End");
+        }
     }
 }
